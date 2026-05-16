@@ -365,9 +365,16 @@ auth.onAuthStateChanged(function(user) {
 function updateUserBadge(user) {
   var badge = document.getElementById('userBadge');
   if (!badge) return;
-  badge.innerHTML =
-    '<img src="' + (user.photoURL||'') + '" style="width:22px;height:22px;border-radius:50%;object-fit:cover;flex-shrink:0" onerror="this.style.display='none'">' +
-    '<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px">' + (user.displayName||user.email||'') + '</span>';
+  var img = document.createElement('img');
+  img.src = user.photoURL || '';
+  img.style.cssText = 'width:22px;height:22px;border-radius:50%;object-fit:cover;flex-shrink:0';
+  img.onerror = function() { this.style.display = 'none'; };
+  var span = document.createElement('span');
+  span.style.cssText = 'flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px';
+  span.textContent = user.displayName || user.email || '';
+  badge.innerHTML = '';
+  badge.appendChild(img);
+  badge.appendChild(span);
 }
 
 function startSync(uid) {
