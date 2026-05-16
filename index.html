@@ -341,6 +341,23 @@ window._grainSignOut  = function() {
   });
 };
 
+// 로그인/로그아웃 버튼 직접 바인딩 (모듈 스크립트 안 — 로그인 전에도 작동)
+document.addEventListener('DOMContentLoaded', function() {
+  var btnLogin = document.getElementById('btnGoogleLogin');
+  if (btnLogin) {
+    btnLogin.addEventListener('click', function() {
+      signInWithPopup(auth, provider).catch(function(e) {
+        console.error('로그인 실패', e);
+        alert('로그인 실패: ' + e.message);
+      });
+    });
+  }
+  var btnOut = document.getElementById('btnSignOut');
+  if (btnOut) {
+    btnOut.addEventListener('click', function() { signOut(auth); });
+  }
+});
+
 // 인증 상태 변화 감지
 onAuthStateChanged(auth, function(user) {
   if (user) {
@@ -823,12 +840,6 @@ window._grainReady = function() {
 // 이벤트 바인딩 (onclick 속성 대신 addEventListener 사용)
 // ================================================================
 function bindEvents() {
-  // 구글 로그인/로그아웃
-  var btnLogin = document.getElementById('btnGoogleLogin');
-  if (btnLogin) btnLogin.addEventListener('click', function() { if(window._grainSignIn) window._grainSignIn(); });
-  var btnOut = document.getElementById('btnSignOut');
-  if (btnOut) btnOut.addEventListener('click', function() { if(window._grainSignOut) window._grainSignOut(); });
-
   // 사이드바 네비게이션
   document.getElementById('sideNav').addEventListener('click', function(e) {
     var item = e.target.closest('.nav-item');
