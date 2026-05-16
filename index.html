@@ -327,7 +327,9 @@ document.addEventListener('DOMContentLoaded', function() {
   var btnLogin = document.getElementById('btnGoogleLogin');
   if (btnLogin) {
     btnLogin.addEventListener('click', function() {
-      auth.signInWithRedirect(provider);
+      auth.signInWithPopup(provider).catch(function(e) {
+        console.error('팝업 로그인 실패', e);
+      });
     });
   }
   var btnOut = document.getElementById('btnSignOut');
@@ -337,13 +339,6 @@ document.addEventListener('DOMContentLoaded', function() {
         window.showToast && window.showToast('로그아웃됨');
       });
     });
-  }
-});
-
-// 리다이렉트 결과 처리
-auth.getRedirectResult().catch(function(e) {
-  if (e.code !== 'auth/no-auth-event') {
-    console.error('리다이렉트 오류', e);
   }
 });
 
