@@ -305,10 +305,10 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 // Firebase 초기화
 // ================================================================
 import { initializeApp }                          from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
-                                                   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, doc, setDoc, getDoc, onSnapshot }
-                                                   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, setDoc, getDoc }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey:            "AIzaSyBxB_GW4T-STo72u6rZEEd-8YLGNhAPir8",
@@ -329,12 +329,7 @@ const provider = new GoogleAuthProvider();
 window._grainAuth     = auth;
 window._grainDb       = db;
 window._grainProvider = provider;
-window._grainSignIn   = function() {
-  signInWithPopup(auth, provider).catch(function(e) {
-    console.error('로그인 실패', e);
-    window.showToast && window.showToast('로그인 실패: ' + e.message);
-  });
-};
+window._grainSignIn = function() { signInWithRedirect(auth, provider); };
 window._grainSignOut  = function() {
   signOut(auth).then(function() {
     window.showToast && window.showToast('로그아웃됨');
@@ -346,15 +341,21 @@ document.addEventListener('DOMContentLoaded', function() {
   var btnLogin = document.getElementById('btnGoogleLogin');
   if (btnLogin) {
     btnLogin.addEventListener('click', function() {
-      signInWithPopup(auth, provider).catch(function(e) {
-        console.error('로그인 실패', e);
-        alert('로그인 실패: ' + e.message);
-      });
+      signInWithRedirect(auth, provider);
     });
   }
   var btnOut = document.getElementById('btnSignOut');
   if (btnOut) {
     btnOut.addEventListener('click', function() { signOut(auth); });
+  }
+});
+
+// 리다이렉트 로그인 결과 처리
+getRedirectResult(auth).then(function(result) {
+  // 리다이렉트 후 돌아왔을 때 자동으로 onAuthStateChanged가 발동됨
+}).catch(function(e) {
+  if (e.code !== 'auth/no-auth-event') {
+    console.error('리다이렉트 로그인 오류', e);
   }
 });
 
